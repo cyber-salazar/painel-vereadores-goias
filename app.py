@@ -64,11 +64,11 @@ if "situacao_sel" in st.session_state and st.session_state["situacao_sel"]:
     df_filtrado = df_filtrado[df_filtrado["situacao"].isin(st.session_state["situacao_sel"])]
 
 # ========= Título =========
-st.title(":bar_chart: Vereadores Eleitos – Goiás (2004–2024)")
+st.title(":bar_chart: Vereadores – Goiás (2004–2024)")
 
 # ========= Tabela 1: Candidatos =========
 st.subheader(":clipboard: Lista de Candidatos Filtrados")
-st.dataframe(df_filtrado)
+st.dataframe(df_filtrado.reset_index(drop=True))
 
 excel_1 = BytesIO()
 df_filtrado.to_excel(excel_1, index=False, sheet_name="Candidatos")
@@ -80,7 +80,7 @@ st.download_button("⬇️ Baixar Candidatos", data=excel_1.getvalue(),
 st.subheader(":bust_in_silhouette: Votos por Candidato")
 votos_vereador = df_filtrado.groupby(["ano", "municipio", "nome"])["votos"].sum().reset_index()
 votos_vereador = votos_vereador.sort_values(by="votos", ascending=False)
-st.dataframe(votos_vereador)
+st.dataframe(votos_vereador.reset_index(drop=True))
 
 excel_2 = BytesIO()
 votos_vereador.to_excel(excel_2, index=False, sheet_name="Votos por Candidato")
@@ -88,19 +88,23 @@ excel_2.seek(0)
 st.download_button("⬇️ Baixar Votos por Candidato", data=excel_2.getvalue(),
                    file_name="votos_por_candidato.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
+# Gráfico com ajustes visuais no eixo Y
 chart_v = alt.Chart(votos_vereador.head(20)).mark_bar().encode(
-    x="votos:Q",
-    y=alt.Y("nome:N", sort="-x"),
-    color="ano:N",
+    x=alt.X("votos:Q", title="Votos"),
+    y=alt.Y("nome:N",
+            sort="-x",
+            axis=alt.Axis(labelLimit=300, labelFontSize=13, title="Candidato",titlePadding=60)),
+    color=alt.Color("ano:N", legend=alt.Legend(title="Ano")),
     tooltip=["ano", "municipio", "nome", "votos"]
-).properties(height=500, title="Top 20 Candidatos com Mais Votos")
+).properties(height=600, title="Top 20 Candidatos com Mais Votos")
 st.altair_chart(chart_v, use_container_width=True)
+
 
 # ========= Tabela 3: Votos por Partido =========
 st.subheader(":classical_building: Votos por Partido")
 votos_partido = df_filtrado.groupby(["ano", "partido"])["votos"].sum().reset_index()
 votos_partido = votos_partido.sort_values(by="votos", ascending=False)
-st.dataframe(votos_partido)
+st.dataframe(votos_partido.reset_index(drop=True))
 
 excel_3 = BytesIO()
 votos_partido.to_excel(excel_3, index=False, sheet_name="Votos por Partido")
@@ -108,10 +112,13 @@ excel_3.seek(0)
 st.download_button("⬇️ Baixar Votos por Partido", data=excel_3.getvalue(),
                    file_name="votos_por_partido.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
+# Gráfico com nomes visíveis no eixo Y
 chart_p = alt.Chart(votos_partido.head(20)).mark_bar().encode(
-    x="votos:Q",
-    y=alt.Y("partido:N", sort="-x"),
-    color="ano:N",
+    x=alt.X("votos:Q", title="Votos"),
+    y=alt.Y("partido:N",
+            sort="-x",
+            axis=alt.Axis(labelLimit=300, labelFontSize=13, title="Partido")),
+    color=alt.Color("ano:N", legend=alt.Legend(title="Ano")),
     tooltip=["ano", "partido", "votos"]
-).properties(height=400, title="Votos por Partido")
+).properties(height=600, title="Votos por Partido")
 st.altair_chart(chart_p, use_container_width=True)
