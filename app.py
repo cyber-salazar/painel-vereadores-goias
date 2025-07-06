@@ -4,6 +4,12 @@ import altair as alt
 from io import BytesIO
 import unicodedata
 
+# ====== Configuração do título e preview do app ======
+st.set_page_config(
+    page_title="Painel de Vereadores em Goiás",
+    page_icon="📊",
+    layout="wide"
+)
 # ========= Função para normalizar texto =========
 def normalizar(texto):
     if pd.isna(texto):
@@ -33,28 +39,26 @@ if st.button("🔄 Limpar Filtros"):
     st.session_state["limpar"] = True
     st.rerun()
 
-# ========= Formulário de Filtros =========
+# ========= Formulário de Filtros (sem Estado) =========
 with st.form(key="filtros_form"):
     col1, col2 = st.columns(2)
     ano_sel = col1.multiselect("Ano", anos, key="ano_sel", default=[] if st.session_state["limpar"] else None)
-    estado_sel = col2.multiselect("Estado", estados, key="estado_sel", default=[] if st.session_state["limpar"] else None)
+    partido_sel = col2.multiselect("Partido", partidos, key="partido_sel", default=[] if st.session_state["limpar"] else None)
 
     col3, col4 = st.columns(2)
     mun_sel_display = col3.multiselect("Município", municipios_opcoes, key="mun_sel", default=[] if st.session_state["limpar"] else None)
-    partido_sel = col4.multiselect("Partido", partidos, key="partido_sel", default=[] if st.session_state["limpar"] else None)
-
-    situacao_sel = st.multiselect("Situação", situacoes, key="situacao_sel", default=[] if st.session_state["limpar"] else None)
+    situacao_sel = col4.multiselect("Situação", situacoes, key="situacao_sel", default=[] if st.session_state["limpar"] else None)
 
     aplicar = st.form_submit_button("✅ Aplicar Filtros")
 
 st.session_state["limpar"] = False
 
-# ========= Filtro Aplicado =========
+# ========= Filtro Aplicado (com estado fixo) =========
 df_filtrado = df.copy()
+df_filtrado = df_filtrado[df_filtrado["estado"] == "GO"]
+
 if "ano_sel" in st.session_state and st.session_state["ano_sel"]:
     df_filtrado = df_filtrado[df_filtrado["ano"].isin(st.session_state["ano_sel"])]
-if "estado_sel" in st.session_state and st.session_state["estado_sel"]:
-    df_filtrado = df_filtrado[df_filtrado["estado"].isin(st.session_state["estado_sel"])]
 if "mun_sel" in st.session_state and st.session_state["mun_sel"]:
     mun_sel_norm = [normalizar(m) for m in st.session_state["mun_sel"]]
     df_filtrado = df_filtrado[df_filtrado["municipio_normalizado"].isin(mun_sel_norm)]
@@ -62,6 +66,7 @@ if "partido_sel" in st.session_state and st.session_state["partido_sel"]:
     df_filtrado = df_filtrado[df_filtrado["partido"].isin(st.session_state["partido_sel"])]
 if "situacao_sel" in st.session_state and st.session_state["situacao_sel"]:
     df_filtrado = df_filtrado[df_filtrado["situacao"].isin(st.session_state["situacao_sel"])]
+
 
 # ========= Título =========
 st.title(":bar_chart: Vereadores – Goiás (2004–2024)")
