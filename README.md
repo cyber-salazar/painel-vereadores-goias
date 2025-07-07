@@ -1,3 +1,4 @@
+![Visualização do app](app.png)
 
 # 📊 Painel de Vereadores em Goiás (2004–2024)
 
