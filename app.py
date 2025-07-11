@@ -53,9 +53,9 @@ with st.form("filtros_form"):
     municipio_sel = c3.multiselect("Município", municipios,
                                    key=KEYS["municipio"],
                                    placeholder="Selecione município(s)")
-    situacao_sel = c4.multiselect("Situação", situacoes,
+    situacao_sel = c4.multiselect("Situação*", situacoes,
                                   key=KEYS["situacao"],
-                                  placeholder="Selecione situação(ões)*")
+                                  placeholder="Selecione situação(ões)")
 
     aplicar = st.form_submit_button("✅ Aplicar Filtros")
 
