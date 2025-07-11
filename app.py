@@ -55,7 +55,7 @@ with st.form("filtros_form"):
                                    placeholder="Selecione município(s)")
     situacao_sel = c4.multiselect("Situação", situacoes,
                                   key=KEYS["situacao"],
-                                  placeholder="Selecione situação(ões)")
+                                  placeholder="Selecione situação(ões)*")
 
     aplicar = st.form_submit_button("✅ Aplicar Filtros")
 
@@ -72,7 +72,7 @@ with st.form("filtros_form"):
 # )
 
 # Texto simples como alternativa:
-st.caption("Nota: em 2004 e 2008 os eleitos apareciam como 'Média' ou 'Eleito'. A partir de 2012 os rótulos mudaram para 'Eleito por QP' e 'Eleito por média'.")
+st.caption("*Nota: em 2004 e 2008 os eleitos apareciam como 'Média' ou 'Eleito'. A partir de 2012 os rótulos mudaram para 'Eleito por QP' e 'Eleito por média'.")
 
 # ========= Aplicação dos filtros =========
 if aplicar:
