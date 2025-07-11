@@ -104,12 +104,16 @@ if aplicar:
                        "votos_por_candidato.xlsx",
                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
-    chart_c = alt.Chart(votos_cand.head(20)).mark_bar().encode(
+    top_candidatos = votos_cand.head(20)
+    altura = min(max(len(top_candidatos) * 40, 400), 1000)
+
+    chart_c = alt.Chart(top_candidatos).mark_bar().encode(
         x="votos:Q",
         y=alt.Y("nome:N", sort="-x"),
         color="ano:N",
         tooltip=["ano", "municipio", "nome", "votos"]
-    ).properties(height=500, title="Top 20 candidatos mais votados")
+    ).properties(height=altura, title="Top 20 candidatos mais votados")
+
     st.altair_chart(chart_c, use_container_width=True)
 
     st.subheader(":classical_building: Votos por partido")
@@ -126,10 +130,14 @@ if aplicar:
                        "votos_por_partido.xlsx",
                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
-    chart_p = alt.Chart(votos_part.head(20)).mark_bar().encode(
+    top_partidos = votos_part.head(20)
+    altura_partidos = min(max(len(top_partidos) * 40, 400), 1000)
+
+    chart_p = alt.Chart(top_partidos).mark_bar().encode(
         x="votos:Q",
         y=alt.Y("partido:N", sort="-x"),
         color="ano:N",
         tooltip=["ano", "partido", "votos"]
-    ).properties(height=500, title="Top 20 partidos mais votados")
+    ).properties(height=altura_partidos, title="Top 20 partidos mais votados")
+
     st.altair_chart(chart_p, use_container_width=True)
