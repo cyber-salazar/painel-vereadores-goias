@@ -20,10 +20,10 @@ df = pd.read_csv("vereadores_go_2004_2024.csv")
 df["municipio_normalizado"] = df["municipio"].apply(normalizar)
 
 # ========= Valores únicos para filtros =========
-anos       = sorted(df["ano"].unique())
-partidos   = sorted(df["partido"].dropna().unique())
-situacoes  = sorted(df["situacao"].dropna().unique())
-municipios = df.drop_duplicates("municipio_normalizado")["municipio"].tolist()
+anos       = ["Todos"] + sorted(df["ano"].unique().tolist())
+partidos   = ["Todos"] + sorted(df["partido"].dropna().unique().tolist())
+situacoes  = ["Todos"] + sorted(df["situacao"].dropna().unique().tolist())
+municipios = ["Todos"] + df.drop_duplicates("municipio_normalizado")["municipio"].tolist()
 
 # ========= Chaves únicas dos widgets =========
 KEYS = {
@@ -36,8 +36,8 @@ KEYS = {
 # ========= Botão Limpar Filtros =========
 if st.button("🔄 Limpar Filtros"):
     for k in KEYS.values():
-        st.session_state[k] = []      # zera a seleção nos widgets
-    st.rerun()                         # recarrega a página já limpa
+        st.session_state[k] = []
+    st.rerun()
 
 # ========= Formulário de filtros =========
 with st.form("filtros_form"):
@@ -59,33 +59,21 @@ with st.form("filtros_form"):
 
     aplicar = st.form_submit_button("✅ Aplicar Filtros")
 
-# ========= Nota sobre Situação (comentado para evitar erro de script) =========
-# st.markdown(
-#     """
-#     <div style='color:#888;font-size:0.9em;margin-top:0.5em'>
-#       <strong>Nota:</strong> em <strong>2004</strong> e <strong>2008</strong> os eleitos apareciam como
-#       <em>"Média"</em> ou <em>"Eleito"</em>. A partir de <strong>2012</strong> os rótulos mudaram para
-#       <em>"Eleito por QP"</em> e <em>"Eleito por média"</em>.
-#     </div>
-#     """,
-#     unsafe_allow_html=True,
-# )
-
-# Texto simples como alternativa:
+# ========= Nota sobre Situação =========
 st.caption("*Nota: em 2004 e 2008 os eleitos apareciam como 'Média' ou 'Eleito'. A partir de 2012 os rótulos mudaram para 'Eleito por QP' e 'Eleito por média'.")
 
 # ========= Aplicação dos filtros =========
 if aplicar:
     df_filtrado = df[df["estado"] == "GO"].copy()
 
-    if ano_sel:
+    if ano_sel and "Todos" not in ano_sel:
         df_filtrado = df_filtrado[df_filtrado["ano"].isin(ano_sel)]
-    if municipio_sel:
+    if municipio_sel and "Todos" not in municipio_sel:
         mun_norm = [normalizar(m) for m in municipio_sel]
         df_filtrado = df_filtrado[df_filtrado["municipio_normalizado"].isin(mun_norm)]
-    if partido_sel:
+    if partido_sel and "Todos" not in partido_sel:
         df_filtrado = df_filtrado[df_filtrado["partido"].isin(partido_sel)]
-    if situacao_sel:
+    if situacao_sel and "Todos" not in situacao_sel:
         df_filtrado = df_filtrado[df_filtrado["situacao"].isin(situacao_sel)]
 
     st.title(":bar_chart: Vereadores – Goiás (2004–2024)")
