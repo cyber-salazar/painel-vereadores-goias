@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -54,23 +53,26 @@ with st.form("filtros_form"):
     municipio_sel = c3.multiselect("Município", municipios,
                                    key=KEYS["municipio"],
                                    placeholder="Selecione município(s)")
-    situacao_sel = c4.multiselect("Situação (ℹ️)", situacoes,
+    situacao_sel = c4.multiselect("Situação", situacoes,
                                   key=KEYS["situacao"],
                                   placeholder="Selecione situação(ões)")
 
     aplicar = st.form_submit_button("✅ Aplicar Filtros")
 
-# ========= Nota sobre Situação =========
-st.markdown(
-    """
-    <div style='color:#888;font-size:0.9em;margin-top:0.5em'>
-      ℹ️ <strong>Nota:</strong> em <strong>2004</strong> e <strong>2008</strong> os eleitos apareciam como
-      <em>"Média"</em> ou <em>"Eleito"</em>. A partir de <strong>2012</strong> os rótulos mudaram para
-      <em>"Eleito por QP"</em> e <em>"Eleito por média"</em>.
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+# ========= Nota sobre Situação (comentado para evitar erro de script) =========
+# st.markdown(
+#     """
+#     <div style='color:#888;font-size:0.9em;margin-top:0.5em'>
+#       <strong>Nota:</strong> em <strong>2004</strong> e <strong>2008</strong> os eleitos apareciam como
+#       <em>"Média"</em> ou <em>"Eleito"</em>. A partir de <strong>2012</strong> os rótulos mudaram para
+#       <em>"Eleito por QP"</em> e <em>"Eleito por média"</em>.
+#     </div>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+# Texto simples como alternativa:
+st.caption("Nota: em 2004 e 2008 os eleitos apareciam como 'Média' ou 'Eleito'. A partir de 2012 os rótulos mudaram para 'Eleito por QP' e 'Eleito por média'.")
 
 # ========= Aplicação dos filtros =========
 if aplicar:
@@ -86,10 +88,8 @@ if aplicar:
     if situacao_sel:
         df_filtrado = df_filtrado[df_filtrado["situacao"].isin(situacao_sel)]
 
-    # ===== Título =====
     st.title(":bar_chart: Vereadores – Goiás (2004–2024)")
 
-    # ===== Tabela candidaturas =====
     st.subheader(":clipboard: Candidatos filtrados")
     st.dataframe(df_filtrado.reset_index(drop=True))
 
@@ -99,7 +99,6 @@ if aplicar:
                        "candidatos_filtrados.xlsx",
                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
-    # ===== Votos por candidato =====
     st.subheader(":bust_in_silhouette: Votos por candidato")
     votos_cand = (df_filtrado
                   .groupby(["ano", "municipio", "nome"])["votos"]
@@ -122,7 +121,6 @@ if aplicar:
     ).properties(height=500, title="Top 20 candidatos mais votados")
     st.altair_chart(chart_c, use_container_width=True)
 
-    # ===== Votos por partido =====
     st.subheader(":classical_building: Votos por partido")
     votos_part = (df_filtrado
                   .groupby(["ano", "partido"])["votos"]
