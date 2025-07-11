@@ -78,11 +78,14 @@ if aplicar:
 
     st.title(":bar_chart: Vereadores – Goiás (2004–2024)")
 
+    df_exibicao = df_filtrado.drop(columns=["municipio_normalizado"], errors="ignore")
+
     st.subheader(":clipboard: Candidatos filtrados")
-    st.dataframe(df_filtrado.reset_index(drop=True))
+    st.dataframe(df_exibicao.reset_index(drop=True))
 
     buf = BytesIO()
-    df_filtrado.to_excel(buf, index=False, sheet_name="Candidatos")
+    df_exibicao.to_excel(buf, index=False, sheet_name="Candidatos")
+
     st.download_button("⬇️ Baixar candidatos", buf.getvalue(),
                        "candidatos_filtrados.xlsx",
                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
